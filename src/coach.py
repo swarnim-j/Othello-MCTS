@@ -7,8 +7,8 @@ from random import shuffle
 from pickle import Pickler, Unpickler
 import sys
 
-from arena import Arena
-from MCTS import MCTS
+from src.arena import Arena
+from src.MCTS import MCTS
 
 log = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 import numpy as np
 
-from othello import Board
+from src.othello import Board
 
 class Game:
     def __init__(self, n):

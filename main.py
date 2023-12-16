@@ -1,9 +1,9 @@
 import logging
 import coloredlogs
 
-from coach import Coach
-from game import Game
-from net import NeuralNet
+from src.coach import Coach
+from src.game import Game
+from src.net import NeuralNet
 from utils import *
 
 log = logging.getLogger(__name__)

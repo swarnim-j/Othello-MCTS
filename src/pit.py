@@ -1,8 +1,8 @@
-from arena import Arena
-from net import NeuralNet
-import MCTS
-from game import Game
-from players import *
+from src.arena import Arena
+from src.net import NeuralNet
+import src.MCTS as MCTS
+from src.game import Game
+from src.players import *
 
 import numpy as np
 
