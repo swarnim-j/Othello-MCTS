@@ -1,22 +1,25 @@
 import numpy as np
+import math
+
+from game.board import Board
 
 EPS = 1e-8
 
 class MCTS:
-    def __init__(self, game, model, args):
+    def __init__(self, game : Board, model, args) -> None:
         self.game = game
         self.model = model
         self.args = args
 
-        self.Qsa = {}      # stores Q values for s, a
-        self.Nsa = {}      # stores times edge s, a was visited
-        self.Ns = {}       # stores times board s was visited
-        self.Ps = {}       # stores policy (probabilities) returned by neural network
+        self.Q_sa = {}      # stores Q values for s, a
+        self.N_sa = {}      # stores times edge s, a was visited
+        self.N_s = {}       # stores times board s was visited
+        self.P_s = {}       # stores policy (probabilities) returned by neural network
 
         self.Ended_s = {}  # stores if state is terminal
         self.Valids_s = {} # stores valid moves for each state
 
-    def search(self, canonical_board):
+    def search(self, canonical_board : Board) -> float:
         state = str(canonical_board)
 
         if state not in self.Ended_s:
@@ -25,6 +28,56 @@ class MCTS:
         if self.Ended_s[state] != 0:
             # terminal node
             return -self.Ended_s[state]
+        
+        if state not in self.P_s:
+            # leaf node
+            self.P_s[state], value = self.model.predict(canonical_board)
+
+            self.Valids_s[state] = self.game.getValidMoves(canonical_board, 1)
+            self.P_s = self.P_s * self.Valids_s[state]
+
+            if np.sum(self.P_s[state]) > 0:
+                self.P_s[state] /= np.sum(self.P_s[state])
+            else:
+                # some error
+                self.P_s[state] += self.Valids_s[state]
+                self.P_s[state] /= np.sum(self.P_s[state])
+
+            self.N_s[state] = 0
+
+            return -value
+        
+        valid_moves = self.Valids_s[state]
+        best_u = -float('inf')
+        best_action = -1 # no valid, moves by default
+
+        # search
+        for action in range(self.game.getActionSize()):
+            if valid_moves[action]:
+                if (state, action) in self.Q_sa:
+                    u = self.Q_sa[(state, action)] + self.args.c_puct * self.P_s[state][action] * math.sqrt(self.N_s[state]) / (1 + self.N_sa[(state, action)])
+                    if u > best_u:
+                        best_u = u
+                        best_action = action
+        action = best_action
+
+        next_state = self.game.nextState(canonical_board, action)
+
+        # expand
+        value = self.search(next_state)
+
+        # backpropagate value from child nodes, i.e., update
+        self.Q_sa[(state, action)] = (self.N_sa[(state, action)] * self.Q_sa[(state, action)] + value) / (self.N_sa[(state, action)] + 1)
+        self.N_sa[(state, action)] += 1
+
+        return -value
+
+    def simulate(self) -> None:
+        pass
+
+
+
+            
         
         
             
