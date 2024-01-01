@@ -15,6 +15,9 @@ class Board:
         x, y = key
         return self.pieces[x][y]
 
+    def __str__(self) -> str:
+        return str(self.pieces)
+
     def getBoardSize(self) -> int:
         return self.n
     
@@ -35,7 +38,7 @@ class Board:
                 return True
         return False
 
-    def getValidMoves(self, colour: int) -> list[(int, int)]:
+    def getLegalMoves(self, colour: int) -> list[(int, int)]:
         moves = []
         for x in range(self.n):
             for y in range(self.n):
@@ -46,6 +49,16 @@ class Board:
                         moves.append((x, y))
                         break
         return moves
-    
-    def getActionSize(self) -> int:
-        return self.n * self.n + 1
+
+    def playMove(self, move: int) -> list[list[int]]:
+        x, y = move // self.n, move % self.n
+        self.pieces[x][y] = 1
+        for dx, dy in self.DIRECTIONS:
+            if self.isValidMove(x, y, dx, dy, 1):
+                for i in range(1, self.n):
+                    if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
+                        break
+                    if self.pieces[x + i * dx][y + i * dy] == 1:
+                        break
+                    self.pieces[x + i * dx][y + i * dy] = 1
+        return self.pieces
