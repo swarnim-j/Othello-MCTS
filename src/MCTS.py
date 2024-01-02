@@ -65,8 +65,8 @@ class MCTS:
         
         action = self.bestMove(state)
 
-        next_state_board = Board(self.game.n)
-        next_state_board.pieces = self.game.nextState(canonical_board, action)
+        next_state_board, next_player = self.game.nextState(canonical_board, action, 1)
+        next_state_board = self.game.getCannonicalForm(next_state_board, next_player)
 
         # expand
         value = self.search(next_state_board)

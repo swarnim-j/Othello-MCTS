@@ -51,6 +51,8 @@ class Board:
         return moves
 
     def playMove(self, move: int) -> list[list[int]]:
+        if move == self.n * self.n:
+            return self.pieces
         x, y = move // self.n, move % self.n
         self.pieces[x][y] = 1
         for dx, dy in self.DIRECTIONS:

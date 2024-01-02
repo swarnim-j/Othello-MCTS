@@ -4,10 +4,17 @@ class Game:
     def __init__(self, size: int) -> None:
         self.n = size
 
-    def hasGameEnded(self, board: Board, player: int) -> bool:
-        if len(self.getValidMoves(board, player)) == 0:
-            return True
-        return False
+    def getInitBoard(self) -> Board:
+        return Board(self.n)
+
+    def hasGameEnded(self, board: Board, player: int) -> int:
+        if (len(board.getLegalMoves(1)) or len(board.getLegalMoves(-1))):
+            return 0
+        diff = board.diff(player)
+        if diff > 0:
+            return 1
+        return -1
+    
 
     def getValidMoves(self, board: Board, player: int) -> list[int]:
         moves = board.getLegalMoves(player)
@@ -21,11 +28,18 @@ class Game:
     def getActionSize(self) -> int:
         return self.n * self.n + 1
     
-    def nextState(self, board: Board, move: int) -> Board:
-        new_board = Board(self.n)
-        new_board.pieces = board.playMove(move)
-        return new_board
+    def nextState(self, board: Board, player: int, move: int) -> (Board, int):
+        if move == self.n * self.n:
+            return board, -player
+        board.playMove(move, player)
+        return board, player
     
     def getBoardSize(self) -> (int, int):
         return (self.n, self.n)
 
+    def getCannonicalForm(self, board: Board, player: int) -> Board:
+        if player == 1:
+            return board
+        new_board = Board(self.n)
+        new_board.pieces = [[-p for p in row] for row in board.pieces]
+        return new_board

@@ -1,44 +1,70 @@
+from src.game.game import Game
+from src.players import OthelloPlayer
+from tqdm import tqdm
+
 class Arena:
-    def __init__(self, player1: Player, player2: Player, game: Game, display: Display):
+    def __init__(self, player1: OthelloPlayer, player2: OthelloPlayer, game: Game):
         self.player1 = player1
         self.player2 = player2
         self.game = game
-        self.display = display
 
-    def play_game(self, verbose=False) -> int:
+    def playGame(self) -> int:
         """
         Executes one episode of a game.
         Returns:
             Integer with the result of the game for player1.
         """
-        # Reset players
-        self.player1.reset()
-        self.player2.reset()
 
-        # Reset game
-        self.game.reset()
+        board = self.game.getInitBoard()
+
+        players = [self.player1, None, self.player2]
+
+        current_player = 1
+
+        i = 0
 
         # Play game
-        while not self.game.is_over():
-            # Get current player
-            player = self.game.get_current_player()
+        while self.game.hasGameEnded(board, current_player) == 0:
+            i += 1
+            # Get move
+            move = players[current_player + 1](self.game.getCannonicalForm(board, current_player))
 
-            # Get action from player
-            action = player.get_action(self.game)
+            valids = self.game.getValidMoves(self.game.getCannonicalForm(board, current_player), 1)
 
-            # Play action
-            self.game.play_action(action)
-
-            # Display game
-            if verbose:
-                self.display.display(self.game)
+            if valids[move] != 0:
+                board, current_player = self.game.nextState(board, move)
 
         # Get result
-        result = self.game.get_result(self.player1)
+        result = self.game.hasGameEnded(self.board, current_player)
 
-        # Update players
-        self.player1.update(result)
-        self.player2.update(-result)
+        return result * current_player
+    
+    def playGames(self, num_games: int) -> (int, int, int):
+        num = num_games // 2
+        wins = [0, 0]
+        draws = 0
 
-        # Return result
-        return result
+        for _ in tqdm(range(num), desc="Arena.playGames (P1 starts)"):
+            result = self.playGame()
+            wins[0] += result
+            if result == 0:
+                draws += 1
+            elif result == -1:
+                wins[1] += 1
+            else:
+                wins[0] += 1
+
+        self.player1, self.player2 = self.player2, self.player1
+
+        for _ in tqdm(range(num), desc="Arena.playGames (P2 starts)"):
+            result = self.playGame()
+            wins[0] += result
+            if result == 0:
+                draws += 1
+            elif result == -1:
+                wins[0] += 1
+            else:
+                wins[1] += 1
+
+        return (*wins, draws)
+
