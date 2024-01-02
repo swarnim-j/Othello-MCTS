@@ -3,11 +3,12 @@ import math
 
 from game.board import Board
 from src.game.game import Game
+from src.model.model import OthelloModel
 
 EPS = 1e-8
 
 class MCTS:
-    def __init__(self, game: Game, model, args) -> None:
+    def __init__(self, game: Game, model: OthelloModel, args) -> None:
         self.game = game
         self.model = model
         self.args = args
@@ -19,6 +20,20 @@ class MCTS:
 
         self.Ended_s = {}  # stores if state is terminal
         self.Valids_s = {} # stores valid moves for each state
+
+    def simulate(self, canonical_board: Board) -> list[float]:
+        for _ in range(self.args.num_sims):
+            self.search(canonical_board)
+
+        state = str(canonical_board)
+
+        counts = [self.N_sa[(state, action)] if (state, action) in self.N_sa else 0 for action in range(self.game.getActionSize())]
+        
+        counts_sum = float(sum(counts))
+
+        probabilities = [count / counts_sum for count in counts]
+
+        return probabilities
 
     def search(self, canonical_board: Board) -> float:
         state = str(canonical_board)
@@ -81,12 +96,3 @@ class MCTS:
 
         return best_action
 
-    def simulate(self) -> None:
-        pass
-
-
-
-            
-        
-        
-            

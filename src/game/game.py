@@ -26,4 +26,6 @@ class Game:
         new_board.pieces = board.playMove(move)
         return new_board
     
+    def getBoardSize(self) -> (int, int):
+        return (self.n, self.n)
 
