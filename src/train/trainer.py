@@ -103,7 +103,7 @@ class Trainer():
 
             arena = Arena(MCTSPlayer(player1_mcts), MCTSPlayer(player2_mcts), self.game)
 
-            p1_wins, p2_wins, draws = arena.playGames(self.args.arena_eps)
+            p1_wins, p2_wins, draws = arena.playGames(self.args.arena_games)
 
             print("P1 Wins:", p1_wins)
             print("P2 Wins:", p2_wins)

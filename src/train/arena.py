@@ -28,17 +28,20 @@ class Arena:
             """
             board = self.game.getInitialBoard()
 
-            players = [self.player1, None, self.player2]
+            players = [self.player2, None, self.player1]
 
             current_player = 1
 
             i = 0
 
+            if print_board:
+                print("Game start")
+                board.printBoard()
+
             # Play game
             while self.game.hasGameEnded(board, current_player) == 0:
                 i += 1
                 # Get move
-                # move = players[current_player + 1](self.game.getCanonicalForm(board, current_player))
                 move = players[current_player + 1].getAction(self.game.getCanonicalForm(board, current_player))
 
                 valids = self.game.getValidMoves(self.game.getCanonicalForm(board, current_player), 1)
@@ -48,11 +51,11 @@ class Arena:
 
                 # Print board
                 if print_board:
-                    print("Move ", i, "Player ", current_player)
+                    print("Move ", i, "Player ", current_player, "action ", move)
                     board.printBoard()
 
             # Get result
-            result = self.game.hasGameEnded(board, -1 * current_player)
+            result = self.game.hasGameEnded(board, current_player)
 
             # Print result
             if print_board:

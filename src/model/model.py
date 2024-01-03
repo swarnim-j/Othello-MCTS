@@ -15,6 +15,13 @@ class Args:
             setattr(self, key, value)
 
 args_dict = {
+    'num_channels': 512,
+    'epochs': 10,
+    'batch_size': 64,
+    'num_sims': 5,
+    'dropout': 0.3,
+    'c_puct': 1,
+    'num_iters': 10
     # TODO: add arguments
 }
 
@@ -75,6 +82,8 @@ class OthelloModel():
                 optimizer.zero_grad()
                 total_loss.backward()
                 optimizer.step()
+            
+            print("pi loss: {:.5f}, v loss: {:.5f}".format(np.mean(pi_losses), np.mean(v_losses)))
 
     def predict(self, board: Board) -> tuple[list[float], float]:
         """

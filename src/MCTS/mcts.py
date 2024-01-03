@@ -1,6 +1,8 @@
 import numpy as np
 import math
 
+from torch import le
+
 from src.game.board import Board
 from src.game.game import Game
 from src.model.model import OthelloModel
@@ -57,12 +59,15 @@ class MCTS:
         for _ in range(self.args.num_sims):
             self.search(canonical_board)
 
-        state = str(canonical_board)
+        state = str(canonical_board.pieces)
 
         counts = [self.N_sa[(state, action)] if (state, action) in self.N_sa else 0 for action in range(self.game.getActionSize())]
         
         counts_sum = float(sum(counts))
 
+        if counts_sum == 0:
+            return [1. / len(counts) for _ in counts] # if all counts are zero, return uniform distribution
+        
         probabilities = [count / counts_sum for count in counts]
 
         return probabilities
@@ -77,7 +82,7 @@ class MCTS:
         Returns:
             float: The value of the current state.
         """
-        state = str(canonical_board)
+        state = str(canonical_board.pieces)
 
         if state not in self.Ended_s:
             self.Ended_s[state] = self.game.hasGameEnded(canonical_board, 1)
@@ -91,7 +96,7 @@ class MCTS:
             self.P_s[state], value = self.model.predict(canonical_board)
 
             self.Valids_s[state] = self.game.getValidMoves(canonical_board, 1)
-            self.P_s = self.P_s * self.Valids_s[state]
+            self.P_s[state] = self.P_s[state] * self.Valids_s[state]
 
             if np.sum(self.P_s[state]) > 0:
                 self.P_s[state] /= np.sum(self.P_s[state])
@@ -106,15 +111,19 @@ class MCTS:
         
         action = self.bestMove(state)
 
-        next_state_board, next_player = self.game.nextState(canonical_board, action, 1)
+        next_state_board, next_player = self.game.nextState(canonical_board, 1, action)
         next_state_board = self.game.getCanonicalForm(next_state_board, next_player)
 
         # expand
         value = self.search(next_state_board)
 
         # backpropagate value from child nodes, i.e., update
-        self.Q_sa[(state, action)] = (self.N_sa[(state, action)] * self.Q_sa[(state, action)] + value) / (self.N_sa[(state, action)] + 1)
-        self.N_sa[(state, action)] += 1
+        if (state, action) in self.Q_sa:
+            self.Q_sa[(state, action)] = (self.N_sa[(state, action)] * self.Q_sa[(state, action)] + value) / (self.N_sa[(state, action)] + 1)
+            self.N_sa[(state, action)] += 1
+        else:
+            self.Q_sa[(state, action)] = value
+            self.N_sa[(state, action)] = 1
 
         return -value
     
@@ -143,6 +152,5 @@ class MCTS:
                 if u > best_u:
                     best_u = u
                     best_action = action
-
         return best_action
 

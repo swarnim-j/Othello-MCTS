@@ -92,8 +92,9 @@ class Game:
         """
         if move == self.n * self.n:
             return board, -player
-        board.playMove(move, player)
-        return board, -player
+        new_board = Board(self.n)
+        new_board.pieces = board.playMove(move, player)
+        return new_board, -player
     
     def getBoardSize(self) -> tuple[int, int]:
         """

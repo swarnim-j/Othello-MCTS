@@ -104,10 +104,9 @@ class GreedyPlayer(OthelloPlayer):
         if len(valids) == 0:
             return board.getBoardSize() ** 2
         actions = []
-        for action in range(board.getBoardSize() ** 2 + 1):
-            action = (action // board.getBoardSize(), action % board.getBoardSize())
-            if action in valids:
-                action = action[0] * board.getBoardSize() + action[1]
+        for action in range(board.getBoardSize() ** 2):
+            action_xy = (action // board.getBoardSize(), action % board.getBoardSize())
+            if action_xy in valids:
                 next_pieces = board.playMove(action, 1)
                 next_board = Board(board.getBoardSize())
                 next_board.pieces = next_pieces

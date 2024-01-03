@@ -9,7 +9,6 @@ class Board:
     Methods:
     - __init__(self, size: int) -> None: Initializes the board with the given size.
     - __getitem__(self, key: (int, int)) -> int: Returns the value at the specified position on the board.
-    - __str__(self) -> str: Returns a string representation of the board.
     - getBoardSize(self) -> int: Returns the size of the board.
     - diff(self, player: int) -> int: Returns the difference in the number of pieces between the specified color and its opponent.
     - isValidMove(self, x: int, y: int, dx: int, dy: int, player: int) -> bool: Checks if a move is valid for the specified color at the given position.
@@ -52,15 +51,6 @@ class Board:
         """
         x, y = key
         return self.pieces[x][y]
-
-    def __str__(self) -> str:
-        """
-        Returns a string representation of the board.
-
-        Returns:
-            str: The string representation of the board.
-        """
-        return str(self.pieces)
 
     def getBoardSize(self) -> int:
         """
@@ -146,21 +136,22 @@ class Board:
         x, y = move // self.n, move % self.n
         if not self.isValidMove(x, y, player):
             return self.pieces
-        self.pieces[x][y] = player
+        pieces = [[self.pieces[i][j] for j in range(self.n)] for i in range(self.n)]
+        pieces[x][y] = player
         for dx, dy in self.DIRECTIONS:
             for i in range(1, self.n + 1):
                 if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
                     for j in range(1, i):
-                        self.pieces[x + j * dx][y + j * dy] = -player
+                        pieces[x + j * dx][y + j * dy] = -player
                     break
-                if self.pieces[x + i * dx][y + i * dy] == 0:
+                if pieces[x + i * dx][y + i * dy] == 0:
                     for j in range(1, i):
-                        self.pieces[x + j * dx][y + j * dy] = -player
+                        pieces[x + j * dx][y + j * dy] = -player
                     break
-                if self.pieces[x + i * dx][y + i * dy] == player:
+                if pieces[x + i * dx][y + i * dy] == player:
                     break
-                self.pieces[x + i * dx][y + i * dy] = player
-        return self.pieces
+                pieces[x + i * dx][y + i * dy] = player
+        return pieces
 
     def printBoard(self) -> None:
         """
