@@ -1,6 +1,6 @@
 from src.game.game import Game
 from src.model.model import OthelloModel
-from MCTS.MCTS import MCTS
+from MCTS.mcts import MCTS
 from src.train.arena import Arena
 from src.train.players import *
 
