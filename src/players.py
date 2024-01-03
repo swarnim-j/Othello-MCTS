@@ -8,11 +8,27 @@ import numpy as np
 class OthelloPlayer(ABC):
     """
     Abstract class for a player.
+
+    This class represents a player in the game of Othello. It is an abstract class that provides a common interface for different types of players.
+
+    Attributes:
+        None
+
+    Methods:
+        getAction: Returns the action to play in a game.
+
     """
     @abstractmethod
     def getAction(self, board: Board) -> int:
         """
         Returns the action to play in a game.
+
+        Args:
+            board (Board): The current state of the game board.
+
+        Returns:
+            int: The action to play.
+
         """
         pass
 
@@ -23,16 +39,34 @@ class RandomPlayer(OthelloPlayer):
     def getAction(self, board: Board) -> int:
         """
         Returns a random action.
+
+        Parameters:
+        - board (Board): The current game board.
+
+        Returns:
+        - int: The randomly chosen action.
         """
         return np.random.choice(board.getLegalMoves())
     
 class HumanPlayer(OthelloPlayer):
     """
     Player that asks for input to play an action.
+
+    Attributes:
+        None
+
+    Methods:
+        getAction(board: Board) -> int: Returns the action selected by the user.
     """
     def getAction(self, board: Board) -> int:
         """
         Returns the action selected by the user.
+
+        Parameters:
+            board (Board): The current game board.
+
+        Returns:
+            int: The action selected by the user.
         """
         valids = board.getLegalMoves()
         while True:
@@ -52,6 +86,12 @@ class GreedyPlayer(OthelloPlayer):
     def getAction(self, board: Board) -> int:
         """
         Returns the action with the highest value.
+        
+        Args:
+            board (Board): The current game board.
+        
+        Returns:
+            int: The action with the highest value.
         """
         valids = board.getLegalMoves()
         actions = []
