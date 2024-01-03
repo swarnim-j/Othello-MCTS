@@ -83,53 +83,50 @@ class Board:
         """
         return sum([row.count(player) - row.count(-player) for row in self.pieces])
 
-    def isValidMove(self, x: int, y: int, dx: int, dy: int, player: int) -> bool:
-        """
-        Check if a move is valid for a given player at a specific position on the board.
+    def isValidMove(self, x: int, y: int, player: int) -> bool:
+            """
+            Check if a move is valid for a given player at a specific position on the board.
 
-        Args:
-            x (int): The x-coordinate of the position.
-            y (int): The y-coordinate of the position.
-            dx (int): The change in x-coordinate for each step.
-            dy (int): The change in y-coordinate for each step.
-            player (int): The player making the move.
+            Args:
+                x (int): The x-coordinate of the position.
+                y (int): The y-coordinate of the position.
+                player (int): The player making the move.
 
-        Returns:
-            bool: True if the move is valid, False otherwise.
-        """
-        if x + dx >= self.n or x + dx < 0 or y + dy >= self.n or y + dy < 0:
+            Returns:
+                bool: True if the move is valid, False otherwise.
+            """
+            for dx, dy in self.DIRECTIONS:
+                if x + dx >= self.n or x + dx < 0 or y + dy >= self.n or y + dy < 0:
+                    continue
+                if self.pieces[x + dx][y + dy] == player:
+                    continue
+                for i in range(2, self.n):
+                    if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
+                        break
+                    if self.pieces[x + i * dx][y + i * dy] == 0:
+                        break
+                    if self.pieces[x + i * dx][y + i * dy] == player:
+                        return True
             return False
-        if self.pieces[x + dx][y + dy] == player:
-            return False
-        for i in range(2, self.n):
-            if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
-                return False
-            if self.pieces[x + i * dx][y + i * dy] == 0:
-                return False
-            if self.pieces[x + i * dx][y + i * dy] == player:
-                return True
-        return False
 
     def getLegalMoves(self, player: int) -> list[(int, int)]:
-        """
-        Returns a list of legal moves for the specified player.
+            """
+            Returns a list of legal moves for the specified player.
 
-        Args:
-            player (int): The player for whom to find legal moves.
+            Args:
+                player (int): The player for whom to find legal moves.
 
-        Returns:
-            list[(int, int)]: A list of legal moves represented as (x, y) coordinates.
-        """
-        moves = []
-        for x in range(self.n):
-            for y in range(self.n):
-                if self.pieces[x][y] != 0:
-                    continue
-                for dx, dy in self.DIRECTIONS:
-                    if self.isValidMove(x, y, dx, dy, player):
+            Returns:
+                list[(int, int)]: A list of legal moves represented as (x, y) coordinates.
+            """
+            moves = []
+            for x in range(self.n):
+                for y in range(self.n):
+                    if self.pieces[x][y] != 0:
+                        continue
+                    if self.isValidMove(x, y, player):
                         moves.append((x, y))
-                        break
-        return moves
+            return moves
 
     def playMove(self, move: int, player: int) -> list[list[int]]:
         """
@@ -145,15 +142,18 @@ class Board:
         if move == self.n * self.n:
             return self.pieces
         x, y = move // self.n, move % self.n
+        if not self.isValidMove(x, y, player):
+            return self.pieces
         self.pieces[x][y] = player
         for dx, dy in self.DIRECTIONS:
-            if self.isValidMove(x, y, dx, dy, player):
-                for i in range(1, self.n):
-                    if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
-                        break
-                    if self.pieces[x + i * dx][y + i * dy] == player:
-                        break
-                    self.pieces[x + i * dx][y + i * dy] = player
+            for i in range(1, self.n):
+                if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
+                    break
+                if self.pieces[x + i * dx][y + i * dy] == 0:
+                    break
+                if self.pieces[x + i * dx][y + i * dy] == player:
+                    break
+                self.pieces[x + i * dx][y + i * dy] = player
         return self.pieces
 
     def printBoard(self) -> None:
