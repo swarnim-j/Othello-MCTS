@@ -1,5 +1,5 @@
 from src.game.game import Game
-from src.players import *
+from train.players import *
 from tqdm import tqdm
 
 class Arena:

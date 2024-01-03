@@ -3,7 +3,7 @@ from src.model.model import OthelloModel
 from src.game.board import Board
 from src.MCTS import MCTS
 from src.train.arena import Arena
-from src.players import *
+from train.players import *
 
 import os
 from random import shuffle
