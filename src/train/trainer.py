@@ -117,8 +117,6 @@ class Trainer():
                 print("Accepting new model")
                 self.player1_net.saveCheckpoint(folder=self.args.checkpoint, filename='best.pth.tar')
 
-
-
     def saveExamples(self, iter: int) -> None:
         """
         Saves the training examples to a file.
