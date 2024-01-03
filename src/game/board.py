@@ -98,9 +98,11 @@ class Board:
             for dx, dy in self.DIRECTIONS:
                 if x + dx >= self.n or x + dx < 0 or y + dy >= self.n or y + dy < 0:
                     continue
+                if self.pieces[x + dx][y + dy] == 0:
+                    continue
                 if self.pieces[x + dx][y + dy] == player:
                     continue
-                for i in range(2, self.n):
+                for i in range(2, self.n + 1):
                     if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
                         break
                     if self.pieces[x + i * dx][y + i * dy] == 0:
@@ -146,10 +148,14 @@ class Board:
             return self.pieces
         self.pieces[x][y] = player
         for dx, dy in self.DIRECTIONS:
-            for i in range(1, self.n):
+            for i in range(1, self.n + 1):
                 if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
+                    for j in range(1, i):
+                        self.pieces[x + j * dx][y + j * dy] = -player
                     break
                 if self.pieces[x + i * dx][y + i * dy] == 0:
+                    for j in range(1, i):
+                        self.pieces[x + j * dx][y + j * dy] = -player
                     break
                 if self.pieces[x + i * dx][y + i * dy] == player:
                     break

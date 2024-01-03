@@ -51,10 +51,8 @@ class Arena:
                     print("Move ", i, "Player ", current_player)
                     board.printBoard()
 
-                current_player *= -1
-
             # Get result
-            result = self.game.hasGameEnded(board, current_player)
+            result = self.game.hasGameEnded(board, -1 * current_player)
 
             # Print result
             if print_board:
@@ -79,25 +77,27 @@ class Arena:
 
         for _ in tqdm(range(num), desc="Arena.playGames (P1 starts)"):
             result = self.playGame(print_board)
-            wins[0] += result
             if result == 0:
                 draws += 1
             elif result == -1:
                 wins[1] += 1
-            else:
+            elif result == 1:
                 wins[0] += 1
+            else:
+                draws += 1
 
         self.player1, self.player2 = self.player2, self.player1
 
         for _ in tqdm(range(num), desc="Arena.playGames (P2 starts)"):
             result = self.playGame(print_board)
-            wins[0] += result
             if result == 0:
                 draws += 1
             elif result == -1:
                 wins[0] += 1
-            else:
+            elif result == 1:
                 wins[1] += 1
+            else:
+                draws += 1
 
         return (*wins, draws)
 

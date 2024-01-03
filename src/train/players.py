@@ -46,7 +46,12 @@ class RandomPlayer(OthelloPlayer):
         Returns:
         - int: The randomly chosen action.
         """
-        return np.random.choice(board.getLegalMoves(1))
+        legal_moves = board.getLegalMoves(1)
+        if len(legal_moves) == 0:
+            return board.getBoardSize() ** 2
+        action = np.random.choice(len(legal_moves))
+        x, y = legal_moves[action]
+        return x * board.getBoardSize() + y
     
 class HumanPlayer(OthelloPlayer):
     """
@@ -69,6 +74,8 @@ class HumanPlayer(OthelloPlayer):
             int: The action selected by the user.
         """
         valids = board.getLegalMoves(1)
+        if len(valids) == 0:
+            return board.getBoardSize() ** 2
         while True:
             action = input()
             action = int(action)
@@ -94,11 +101,14 @@ class GreedyPlayer(OthelloPlayer):
             int: The action with the highest value.
         """
         valids = board.getLegalMoves(1)
+        if len(valids) == 0:
+            return board.getBoardSize() ** 2
         actions = []
         for action in range(board.getBoardSize() ** 2 + 1):
             action = (action // board.getBoardSize(), action % board.getBoardSize())
             if action in valids:
-                next_pieces = board.playMove(action)
+                action = action[0] * board.getBoardSize() + action[1]
+                next_pieces = board.playMove(action, 1)
                 next_board = Board(board.getBoardSize())
                 next_board.pieces = next_pieces
                 score = next_board.diff(1)

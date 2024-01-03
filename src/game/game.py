@@ -36,7 +36,14 @@ class Game:
         Returns:
             int: 0 if the game has not ended, 1 if the current player has won, -1 if the opponent has won.
         """
-        if (len(board.getLegalMoves(1)) or len(board.getLegalMoves(-1))):
+        if len(board.getLegalMoves(1)) == 0 and len(board.getLegalMoves(-1)) == 0:
+            diff = board.diff(player)
+            if diff > 0:
+                return 1
+            elif diff < 0:
+                return -1
+            return 2
+        if len(board.getLegalMoves(1)) or len(board.getLegalMoves(-1)):
             return 0
         diff = board.diff(player)
         if diff > 0:
@@ -86,7 +93,7 @@ class Game:
         if move == self.n * self.n:
             return board, -player
         board.playMove(move, player)
-        return board, player
+        return board, -player
     
     def getBoardSize(self) -> (int, int):
         """
