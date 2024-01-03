@@ -2,8 +2,17 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from src.game.game import Game
+
 class OthelloNet(nn.Module):
-    def __init__(self, game, args):
+    def __init__(self, game: Game, args):
+        """
+        Initializes the OthelloNet model.
+
+        Args:
+            game (Game): The game object.
+            args: The arguments for the model.
+        """
         super(OthelloNet, self).__init__()
 
         self.x, self.y = game.getBoardSize()
@@ -33,6 +42,15 @@ class OthelloNet(nn.Module):
         self.fc4 = nn.Linear(512, 1)                    # Value head
 
     def forward(self, s):
+        """
+        Performs forward pass through the model.
+
+        Args:
+            s: The input tensor.
+
+        Returns:
+            Tuple: The policy and value outputs.
+        """
         # Input reshaping
         s = s.view(-1, 1, self.x, self.y)
 
