@@ -47,7 +47,7 @@ class Trainer():
 
         while True:
             episode_step += 1
-            canonical_board = self.game.getCannonicalForm(board, self.current_player)
+            canonical_board = self.game.getCanonicalForm(board, self.current_player)
 
             pi = self.mcts.simulate(canonical_board)
 

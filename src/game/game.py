@@ -1,5 +1,7 @@
 from board import Board
 
+import numpy as np
+
 class Game:
     """
     Represents the game logic for Othello.
@@ -95,7 +97,7 @@ class Game:
         """
         return (self.n, self.n)
 
-    def getCannonicalForm(self, board: Board, player: int) -> Board:
+    def getCanonicalForm(self, board: Board, player: int) -> Board:
         """
         Gets the canonical form of the game board for the specified player.
 
@@ -111,3 +113,29 @@ class Game:
         new_board = Board(self.n)
         new_board.pieces = [[-p for p in row] for row in board.pieces]
         return new_board
+    
+    def getSymmetries(self, canonical_board: Board, pi: list[float]) -> list[(Board, list[float])]:
+        """
+        Gets the symmetries of the game board and policy vector.
+
+        Args:
+            board (Board): The current game board.
+            pi (list[float]): The policy vector.
+
+        Returns:
+            list[(Board, list[float])]: A list of tuples containing the symmetries of the game board and policy vector.
+        """
+        board = canonical_board.pieces
+        pi_board = np.reshape(pi[:-1], (self.n, self.n))
+        l = []
+        for i in range(1, 5):
+            for j in [True, False]:
+                new_b = np.rot90(board, i)
+                new_pi = np.rot90(pi_board, i)
+                if j:
+                    new_b = np.fliplr(new_b)
+                    new_pi = np.fliplr(new_pi)
+                new_board = Board(self.n)
+                new_board.pieces = new_b
+                l += [(new_board, list(new_pi.ravel()) + [pi[-1]])]
+        return l

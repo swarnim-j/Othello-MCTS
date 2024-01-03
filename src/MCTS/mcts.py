@@ -107,7 +107,7 @@ class MCTS:
         action = self.bestMove(state)
 
         next_state_board, next_player = self.game.nextState(canonical_board, action, 1)
-        next_state_board = self.game.getCannonicalForm(next_state_board, next_player)
+        next_state_board = self.game.getCanonicalForm(next_state_board, next_player)
 
         # expand
         value = self.search(next_state_board)
