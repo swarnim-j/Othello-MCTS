@@ -4,7 +4,7 @@ class Game:
     def __init__(self, size: int) -> None:
         self.n = size
 
-    def getInitBoard(self) -> Board:
+    def getInitialBoard(self) -> Board:
         return Board(self.n)
 
     def hasGameEnded(self, board: Board, player: int) -> int:
@@ -14,7 +14,6 @@ class Game:
         if diff > 0:
             return 1
         return -1
-    
 
     def getValidMoves(self, board: Board, player: int) -> list[int]:
         moves = board.getLegalMoves(player)
