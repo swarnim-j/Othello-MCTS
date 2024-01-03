@@ -8,7 +8,30 @@ from src.model.model import OthelloModel
 EPS = 1e-8
 
 class MCTS:
+    """
+    Monte Carlo Tree Search (MCTS) algorithm for game playing.
+
+    Attributes:
+        game (Game): The game environment.
+        model (OthelloModel): The neural network model.
+        args: Additional arguments for MCTS.
+        Q_sa (dict): Stores Q values for state-action pairs.
+        N_sa (dict): Stores the number of times each state-action pair was visited.
+        N_s (dict): Stores the number of times each state was visited.
+        P_s (dict): Stores the policy (probabilities) returned by the neural network.
+        Ended_s (dict): Stores if a state is terminal.
+        Valids_s (dict): Stores valid moves for each state.
+    """
+
     def __init__(self, game: Game, model: OthelloModel, args) -> None:
+        """
+        Initialize the MCTS algorithm.
+
+        Args:
+            game (Game): The game environment.
+            model (OthelloModel): The neural network model.
+            args: Additional arguments for MCTS.
+        """
         self.game = game
         self.model = model
         self.args = args
@@ -22,6 +45,15 @@ class MCTS:
         self.Valids_s = {} # stores valid moves for each state
 
     def simulate(self, canonical_board: Board) -> list[float]:
+        """
+        Perform Monte Carlo Tree Search simulation.
+
+        Args:
+            canonical_board (Board): The current state of the board.
+
+        Returns:
+            list[float]: The probabilities of selecting each action.
+        """
         for _ in range(self.args.num_sims):
             self.search(canonical_board)
 
@@ -36,6 +68,15 @@ class MCTS:
         return probabilities
 
     def search(self, canonical_board: Board) -> float:
+        """
+        Perform the MCTS search.
+
+        Args:
+            canonical_board (Board): The current state of the board.
+
+        Returns:
+            float: The value of the current state.
+        """
         state = str(canonical_board)
 
         if state not in self.Ended_s:
@@ -78,6 +119,15 @@ class MCTS:
         return -value
     
     def bestMove(self, state: str) -> int:
+        """
+        Find the best move to make based on the current state.
+
+        Args:
+            state (str): The current state of the board.
+
+        Returns:
+            int: The best action to take.
+        """
         valid_moves = self.Valids_s[state]
         best_u = -float('inf')
         best_action = -1 # no valid moves, by default
