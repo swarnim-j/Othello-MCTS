@@ -1,4 +1,4 @@
-from model.OthelloNet import OthelloNet
+from src.model.OthelloNet import OthelloNet
 from src.game.game import Game
 from src.game.board import Board
 

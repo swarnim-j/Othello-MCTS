@@ -131,12 +131,13 @@ class Board:
                         break
         return moves
 
-    def playMove(self, move: int) -> list[list[int]]:
+    def playMove(self, move: int, player: int) -> list[list[int]]:
         """
         Plays a move on the game board.
 
         Args:
             move (int): The move to be played.
+            player (int): The player making the move.
 
         Returns:
             list[list[int]]: The updated game board after playing the move.
@@ -144,15 +145,15 @@ class Board:
         if move == self.n * self.n:
             return self.pieces
         x, y = move // self.n, move % self.n
-        self.pieces[x][y] = 1
+        self.pieces[x][y] = player
         for dx, dy in self.DIRECTIONS:
-            if self.isValidMove(x, y, dx, dy, 1):
+            if self.isValidMove(x, y, dx, dy, player):
                 for i in range(1, self.n):
                     if x + i * dx >= self.n or x + i * dx < 0 or y + i * dy >= self.n or y + i * dy < 0:
                         break
-                    if self.pieces[x + i * dx][y + i * dy] == 1:
+                    if self.pieces[x + i * dx][y + i * dy] == player:
                         break
-                    self.pieces[x + i * dx][y + i * dy] = 1
+                    self.pieces[x + i * dx][y + i * dy] = player
         return self.pieces
 
     def printBoard(self) -> None:

@@ -1,5 +1,5 @@
 from src.game.board import Board
-from MCTS.MCTS import MCTS
+from src.MCTS.mcts import MCTS
 
 from abc import ABC, abstractmethod
 

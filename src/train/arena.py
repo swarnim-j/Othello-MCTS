@@ -1,5 +1,5 @@
 from src.game.game import Game
-from train.players import *
+from src.train.players import *
 from tqdm import tqdm
 
 class Arena:
@@ -26,7 +26,7 @@ class Arena:
             Returns:
                 int: Integer with the result of the game for player1.
             """
-            board = self.game.getInitBoard()
+            board = self.game.getInitialBoard()
 
             players = [self.player1, None, self.player2]
 

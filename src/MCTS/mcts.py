@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-from game.board import Board
+from src.game.board import Board
 from src.game.game import Game
 from src.model.model import OthelloModel
 
