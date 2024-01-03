@@ -44,15 +44,17 @@ class Arena:
                 valids = self.game.getValidMoves(self.game.getCanonicalForm(board, current_player), 1)
 
                 if valids[move] != 0:
-                    board, current_player = self.game.nextState(board, 1, move)
+                    board, current_player = self.game.nextState(board, current_player, move)
 
                 # Print board
                 if print_board:
                     print("Move ", i, "Player ", current_player)
                     board.printBoard()
 
+                current_player *= -1
+
             # Get result
-            result = self.game.hasGameEnded(self.board, current_player)
+            result = self.game.hasGameEnded(board, current_player)
 
             # Print result
             if print_board:
