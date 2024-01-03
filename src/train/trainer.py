@@ -2,10 +2,16 @@ from src.game.game import Game
 from src.model.model import OthelloModel
 from src.game.board import Board
 from src.MCTS import MCTS
+from src.train.arena import Arena
+from src.players import *
 
+import os
+from random import shuffle
+import sys
 import numpy as np
 from tqdm import tqdm
 from collections import deque
+from pickle import Pickler, Unpickler
 
 class Trainer():
     def __init__(self, game: Game, model: OthelloModel, args) -> None:
@@ -21,13 +27,13 @@ class Trainer():
             None
         """
         self.game = game
-        self.nnet = model
-        self.pnet = self.nnet.__class__(self.game)
+        self.player1_net = model
+        self.player2_net = self.nnet.__class__(self.game)
         self.args = args
         self.mcts = MCTS(self.game, self.nnet, self.args)
         self.training_examples_history = []
 
-    def playEpisode(self) -> list[(Board, list[float], float)]:
+    def runEpisode(self) -> list[(Board, list[float], float)]:
         """
         Executes one episode of a game.
 
@@ -70,8 +76,8 @@ class Trainer():
                 train_examples = deque([], maxlen=self.args.maxlen_queue)
                 
                 for _ in range(tqdm(self.args.num_eps, desc="SelfPlay.learn")):
-                    self.mcts = MCTS(self.game, self.nnet, self.args)
-                    train_examples += self.playEpisode()
+                    self.mcts = MCTS(self.game, self.player1_net, self.args)
+                    train_examples += self.runEpisode()
 
                 self.training_examples_history.append(train_examples)
 
@@ -79,5 +85,74 @@ class Trainer():
                 print("Clearing training examples history")
                 self.training_examples_history.pop(0)
             
-            self.nnet.train(self.training_examples_history)
+            self.saveExamples(i - 1)
+
+            train_examples = []
+            for e in self.training_examples_history:
+                train_examples.extend(e)
+            
+            shuffle(train_examples)
+
+            # TODO: change file and folder name
+            self.player1_net.saveCheckpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            self.player2_net.loadCheckpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            player2_mcts = MCTS(self.game, self.player2_net, self.args)
+
+            self.player1_net.train(train_examples)
+            player1_mcts = MCTS(self.game, self.player1_net, self.args)
+
+            arena = Arena(MCTSPlayer(player1_mcts), MCTSPlayer(player2_mcts), self.game)
+
+            p1_wins, p2_wins, draws = arena.playGames(self.args.arena_eps)
+
+            print("P1 Wins:", p1_wins)
+            print("P2 Wins:", p2_wins)
+            print("Draws:", draws)
+
+            if p1_wins + p2_wins == 0 or float(p1_wins) / (p1_wins + p2_wins) < self.args.update_threshold:
+                print("Rejecting new model")
+                # TODO: change file and folder name
+                self.player1_net.loadCheckpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            else:
+                print("Accepting new model")
+                self.player1_net.saveCheckpoint(folder=self.args.checkpoint, filename='best.pth.tar')
+
+
+
+    def saveExamples(self, iter: int) -> None:
+        """
+        Saves the training examples to a file.
+
+        Returns:
+            None
+        """
+        # TODO: change file name and folder name
+        folder = './temp/'
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        filename = os.path.join(folder, "checkpoint_" + str(iter) + ".examples")
+        with open(filename, "wb+") as f:
+            Pickler(f).dump(self.training_examples_history)
+        f.closed
+
+    def loadExamples(self) -> None:
+        """
+        Loads the training examples from a file.
+
+        Returns:
+            None
+        """
+        # TODO: change file name and folder name
+        modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
+        examplesFile = modelFile + ".examples"
+        if not os.path.isfile(examplesFile):
+            print(examplesFile)
+            r = input("File with training examples not found. Continue? [y|n]")
+            if r != "y":
+                sys.exit()
+        else:
+            print("File with training examples found. Read it.")
+            with open(examplesFile, "rb") as f:
+                self.training_examples_history = Unpickler(f).load()
+            f.closed
         
