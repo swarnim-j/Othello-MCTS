@@ -1,5 +1,8 @@
-from abc import abstractmethod, ABC
 from src.game.board import Board
+from src.MCTS import MCTS
+
+from abc import ABC, abstractmethod
+
 import numpy as np
 
 class OthelloPlayer(ABC):
@@ -63,3 +66,31 @@ class GreedyPlayer(OthelloPlayer):
         actions.sort()
         best_action = board.getBoardSize() ** 2 if len(actions) == 0 else actions[0][1]
         return best_action
+    
+class MCTSPlayer(OthelloPlayer):
+    """
+    Player that uses the MCTS algorithm to play an action.
+    """
+    def __init__(self, mcts: MCTS) -> None:
+        """
+        Initializes the MCTSPlayer class.
+
+        Parameters:
+        - mcts (MCTS): The MCTS algorithm instance used by the player.
+        """
+        self.mcts = mcts
+        
+        
+    def getAction(self, board: Board) -> int:
+        """
+        Returns the action selected by the MCTS algorithm.
+
+        Parameters:
+        - board (Board): The current game board.
+
+        Returns:
+        - int: The selected action.
+        """
+        pi = self.mcts.simulate(board)
+        action = np.random.choice(len(pi), p=pi)
+        return action
