@@ -78,7 +78,7 @@ class Game:
         """
         return self.n * self.n + 1
     
-    def nextState(self, board: Board, player: int, move: int) -> (Board, int):
+    def nextState(self, board: Board, player: int, move: int) -> tuple[Board, int]:
         """
         Gets the next state of the game after a move is played.
 
@@ -95,7 +95,7 @@ class Game:
         board.playMove(move, player)
         return board, -player
     
-    def getBoardSize(self) -> (int, int):
+    def getBoardSize(self) -> tuple[int, int]:
         """
         Gets the size of the game board.
 
@@ -121,7 +121,7 @@ class Game:
         new_board.pieces = [[-p for p in row] for row in board.pieces]
         return new_board
     
-    def getSymmetries(self, canonical_board: Board, pi: list[float]) -> list[(Board, list[float])]:
+    def getSymmetries(self, canonical_board: Board, pi: list[float]) -> list[tuple[Board, list[float]]]:
         """
         Gets the symmetries of the game board and policy vector.
 
@@ -143,6 +143,6 @@ class Game:
                     new_b = np.fliplr(new_b)
                     new_pi = np.fliplr(new_pi)
                 new_board = Board(self.n)
-                new_board.pieces = new_b
+                new_board.pieces = list[list[int]](new_b)
                 l += [(new_board, list(new_pi.ravel()) + [pi[-1]])]
         return l

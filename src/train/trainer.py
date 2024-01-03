@@ -28,12 +28,12 @@ class Trainer():
         """
         self.game = game
         self.player1_net = model
-        self.player2_net = self.nnet.__class__(self.game)
+        self.player2_net = self.player1_net.__class__(self.game)
         self.args = args
-        self.mcts = MCTS(self.game, self.nnet, self.args)
+        self.mcts = MCTS(self.game, self.player1_net, self.args)
         self.training_examples_history = []
 
-    def runEpisode(self) -> list[(Board, list[float], float)]:
+    def runEpisode(self) -> list[tuple[Board, list[float], float]]:
         """
         Executes one episode of a game.
 
@@ -75,7 +75,7 @@ class Trainer():
             if i > 1:
                 train_examples = deque([], maxlen=self.args.maxlen_queue)
                 
-                for _ in range(tqdm(self.args.num_eps, desc="SelfPlay.learn")):
+                for _ in tqdm(range(self.args.num_eps), desc="SelfPlay.learn"):
                     self.mcts = MCTS(self.game, self.player1_net, self.args)
                     train_examples += self.runEpisode()
 

@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from src.game.game import Game
 
 class OthelloNet(nn.Module):
-    def __init__(self, game: Game, args):
+    def __init__(self, game: Game, args) -> None:
         """
         Initializes the OthelloNet model.
 
@@ -41,7 +41,7 @@ class OthelloNet(nn.Module):
         self.fc3 = nn.Linear(512, game.getActionSize()) # Policy head
         self.fc4 = nn.Linear(512, 1)                    # Value head
 
-    def forward(self, s):
+    def forward(self, s) -> tuple[torch.Tensor, torch.Tensor]:
         """
         Performs forward pass through the model.
 

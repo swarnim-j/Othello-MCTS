@@ -39,7 +39,7 @@ class Board:
         self.pieces[size // 2 - 1][size // 2] = -1
         self.pieces[size // 2][size // 2 - 1] = -1
 
-    def __getitem__(self, key: (int, int)) -> int:
+    def __getitem__(self, key: tuple[int, int]) -> int:
         """
         Get the value at the specified position on the board.
 
@@ -111,7 +111,7 @@ class Board:
                         return True
             return False
 
-    def getLegalMoves(self, player: int) -> list[(int, int)]:
+    def getLegalMoves(self, player: int) -> list[tuple[int, int]]:
             """
             Returns a list of legal moves for the specified player.
 

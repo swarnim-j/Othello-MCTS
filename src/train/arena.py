@@ -60,7 +60,7 @@ class Arena:
 
             return result * current_player
     
-    def playGames(self, num_games: int, print_board: bool = False) -> (int, int, int):
+    def playGames(self, num_games: int, print_board: bool = False) -> tuple[int, int, int]:
         """
         Play a specified number of games between two players and return the results.
 
@@ -99,5 +99,5 @@ class Arena:
             else:
                 draws += 1
 
-        return (*wins, draws)
+        return (wins[0], wins[1], draws)
 

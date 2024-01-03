@@ -9,7 +9,16 @@ import torch.optim as optim
 import torch
 from tqdm import tqdm
 
-args = {}
+class Args:
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+args_dict = {
+    # TODO: add arguments
+}
+
+args = Args(**args_dict)
 
 class OthelloModel():
     def __init__(self, game: Game) -> None:
@@ -26,7 +35,7 @@ class OthelloModel():
         self.x, self.y = game.getBoardSize()
         self.action_size = game.getActionSize()
 
-    def train(self) -> None:
+    def train(self, examples: list[tuple[Board, list[float], float]]) -> None:
         """
         Trains the model using the examples stored in self.examples.
 
@@ -41,11 +50,11 @@ class OthelloModel():
             v_losses = []
             self.net.train()
 
-            batch_count = int(len(self.examples) / args.batch_size)
+            batch_count = int(len(examples) / args.batch_size)
 
             for _ in tqdm(range(batch_count), desc="OthelloNet.train"):
-                sample_ids = np.random.randint(len(self.examples), size=args.batch_size)
-                boards, pis, vs = list(zip(*[self.examples[i] for i in sample_ids]))
+                sample_ids = np.random.randint(len(examples), size=args.batch_size)
+                boards, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
                 boards = [board.pieces for board in boards]
                 boards_tensor = torch.FloatTensor(np.array(boards).astype(np.float64))
                 target_pis = torch.FloatTensor(np.array(pis))
@@ -67,7 +76,7 @@ class OthelloModel():
                 total_loss.backward()
                 optimizer.step()
 
-    def predict(self, board: Board) -> (list[float], float):
+    def predict(self, board: Board) -> tuple[list[float], float]:
         """
         Predicts the policy and value for a given board state.
 
@@ -77,7 +86,8 @@ class OthelloModel():
         Returns:
             tuple: A tuple containing the policy (list of probabilities) and the value (float).
         """
-        board_tensor = torch.FloatTensor(board.pieces.astype(np.float64))
+        board_tensor = np.asarray(board.pieces)
+        board_tensor = torch.FloatTensor(board_tensor.astype(np.float64))
         board_tensor = board_tensor.view(1, self.x, self.y)
         self.net.eval()
         with torch.no_grad():
