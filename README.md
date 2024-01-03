@@ -1,3 +1,0 @@
-# Othello RL
-
-This repository implements a Monte Carlo Tree Search (MCTS) algorithm for decision-making in game-playing scenarios along with Deep Reinforcement Learning techniques, following the methodology inspired by approaches like AlphaZero. The code includes modules for the MCTS algorithm, game logic, neural network models, player implementations, and an arena for player competition. The coaching module orchestrates self-play and learning, creating a framework for experimentation. The implementation is structured to reflect a similar methodology to AlphaZero, where reinforcement learning and tree search guide decision-making in games.
