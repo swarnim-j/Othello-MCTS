@@ -1,0 +1,11 @@
+# virtual environment
+venv
+
+# vscode
+.vscode
+
+# python cache
+__pycache__
+
+# testing
+*playground.ipynb
