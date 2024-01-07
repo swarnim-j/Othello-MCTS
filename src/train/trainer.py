@@ -57,8 +57,8 @@ class Trainer():
                 training_examples.append([board, self.current_player, pi, None])
 
             action = np.random.choice(len(pi), p=pi)
-            board, self.current_player = self.game.nextState(board, action, self.current_player)
 
+            board, self.current_player = self.game.nextState(board, self.current_player, action)
             result = self.game.hasGameEnded(board, self.current_player)
 
             if result != 0:
